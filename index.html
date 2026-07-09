@@ -107,8 +107,19 @@
       <h2>Elige una categoría</h2>
       <p class="section-lead">Selecciona una línea de negocio para ver subcategorías y productos disponibles.</p>
 
+      <!--
+        Diagrama principal: recrea la estructura del boceto original
+        (rectángulo cruzado por dos diagonales, ícono al centro, una
+        categoría por cuadrante). Se genera con JS en base a CATALOG.
+        En pantallas pequeñas se oculta y se muestra la lista de
+        tarjetas de abajo en su lugar (ver #category-grid).
+      -->
+      <div class="diagram-wrap">
+        <svg id="category-diagram" viewBox="0 0 600 400" role="img" aria-label="Mapa de categorías: toca un cuadrante"></svg>
+      </div>
+
       <div class="category-grid" id="category-grid">
-        <!-- Las tarjetas de categoría se generan dinámicamente desde JS (CATALOG) -->
+        <!-- Tarjetas de respaldo para pantallas pequeñas; se generan dinámicamente desde JS (CATALOG) -->
       </div>
     </div>
   </section>
@@ -147,8 +158,8 @@
         <p>Escríbenos y coordinamos una cotización a tu medida.</p>
         <ul class="contact-list">
           <li>📍 Av. Perú 123 — Piura, Perú</li>
-          <li>✉️ danie.hs96@</li>
-          <li>📞 +51 949580786</li>
+          <li>✉️ contacto@adolfojurado.com</li>
+          <li>📞 +51 900 000 000</li>
         </ul>
       </div>
       <form class="contact-form" id="contact-form">

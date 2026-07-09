@@ -44,11 +44,15 @@ vea nítida en pantallas grandes.
   ventanas emergentes: son secciones reales de la página, a las que
   el menú te lleva con scroll suave. Esto es lo estándar en un sitio
   profesional (mejor para SEO y para compartir enlaces directos).
-- **Catálogo**: las categorías (Tecnología, Servicios, Alimentos,
-  Educación) se muestran como tarjetas, no como círculos. Al hacer
-  clic se abre una ventana con las subcategorías y luego los
-  productos, con tarjetas de producto (miniatura, nombre, detalle,
-  precio, botón Comprar).
+- **Catálogo**: recrea la estructura del boceto original de tu
+  profesor — un rectángulo cruzado por dos diagonales, con el logo al
+  centro y una categoría en cada cuadrante (Tecnología, Servicios,
+  Alimentos, Educación). Al tocar un cuadrante se abre esa categoría.
+  En pantallas pequeñas (celular) este diagrama se reemplaza por una
+  lista simple de tarjetas, porque las diagonales son difíciles de
+  tocar con precisión en una pantalla táctil chica.
+  Dentro de cada categoría: subcategorías → productos con foto real,
+  nombre, detalle técnico, precio y botón Comprar.
 - **Una sola ventana a la vez**: si ya hay una ventana abierta y haces
   clic en otra categoría o botón, la anterior se cierra automáticamente.
   También puedes cerrar con `Esc` o haciendo clic fuera de la ventana.
@@ -83,12 +87,38 @@ Todo el catálogo vive en el objeto `CATALOG` al inicio de `js/app.js`.
 Para agregar un producto a una subcategoría existente:
 
 ```js
-{ id: "lenovo-x1", name: "Lenovo X1", price: 620, meta: "Core i7 · 16GB" },
+{ id: "lenovo-x1", name: "Lenovo X1", price: 620, meta: "Core i7 · 16GB", img: unsplash("FOTO-ID-AQUI") },
 ```
 
 `meta` es el detalle corto que aparece debajo del nombre (procesador,
-capacidad, etc.) — ayuda a que las tarjetas de producto se vean
-completas y profesionales en vez de solo nombre y precio.
+capacidad, etc.). `img` es la foto del producto — ver la siguiente
+sección para cómo conseguirla.
+
+## Sobre las fotos de producto
+
+Cada producto ya tiene una foto real (no ícono ni emoji), tomada de
+Unsplash — banco de fotos de uso libre y gratuito, incluso comercial,
+sin necesidad de atribución. Son fotos genéricas del tipo de producto
+(una laptop, un dron, una canasta de verduras), no fotos oficiales de
+marca, así que sirven como referencia visual pero no son el producto
+exacto que vendas.
+
+**Para poner la foto real de un producto tuyo:**
+
+1. Toma o consigue la foto (idealmente cuadrada o 4:3, buena luz).
+2. Guárdala en una carpeta nueva `assets/productos/` con un nombre
+   simple, ej: `assets/productos/hp-elitebook.jpg`.
+3. En `js/app.js`, cambia esa línea de:
+   ```js
+   img: unsplash("1496181133206-80ce9b88a853")
+   ```
+   a:
+   ```js
+   img: "assets/productos/hp-elitebook.jpg"
+   ```
+
+No hace falta tocar nada más — el mismo `<img>` en la tarjeta de
+producto se adapta automáticamente.
 
 ## Cómo reiniciar los datos guardados (para pruebas)
 

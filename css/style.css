@@ -133,9 +133,32 @@ ul{ list-style:none; margin:0; padding:0; }
 .stat-list strong{ font-family:var(--font-display); font-size:1.4rem; color:var(--red); }
 .stat-list span{ font-size:0.82rem; color:var(--ink-soft); }
 
-/* ============ CATEGORY GRID (reemplaza los círculos) ============ */
+/* ============ DIAGRAMA (rectángulo + diagonales + ícono central) ============ */
+.diagram-wrap{
+  max-width:640px; margin:0 auto 40px;
+  background: var(--panel); border:1px solid var(--border); border-radius: var(--radius-lg);
+  padding:16px; box-shadow: var(--shadow-sm);
+}
+#category-diagram{ width:100%; height:auto; display:block; }
+#category-diagram .quad{
+  fill: var(--ink); opacity:0.04; cursor:pointer;
+  transition: opacity .15s ease, fill .15s ease;
+}
+#category-diagram .quad:hover{ fill: var(--red); opacity:0.16; }
+#category-diagram .diagonal{ stroke: var(--border); stroke-width:1.5; }
+#category-diagram .frame{ fill:none; stroke: var(--ink); stroke-width:2; }
+#category-diagram .quad-icon{ font-size:26px; pointer-events:none; }
+#category-diagram .quad-label{
+  font-family: var(--font-display); font-size:12px; fill: var(--ink); pointer-events:none;
+  text-anchor:middle; letter-spacing:0.3px;
+}
+#category-diagram .center-ring{ fill:#fff; stroke: var(--red); stroke-width:3; }
+#category-diagram .center-hint{ font-size:9px; fill: var(--ink-soft); text-anchor:middle; pointer-events:none; }
+
+/* ============ CATEGORY GRID (respaldo en móvil) ============ */
 .category-grid{
-  display:grid; grid-template-columns: repeat(4, 1fr); gap:20px;
+  display:none;
+  grid-template-columns: repeat(4, 1fr); gap:20px;
 }
 .category-card{
   position:relative;
@@ -256,10 +279,11 @@ ul{ list-style:none; margin:0; padding:0; }
   padding:12px; background: var(--paper);
 }
 .product-thumb{
-  width:56px; height:56px; border-radius:12px; flex-shrink:0;
-  background: linear-gradient(160deg, var(--red), var(--red-dark));
-  display:flex; align-items:center; justify-content:center; font-size:1.5rem;
+  width:64px; height:64px; border-radius:12px; flex-shrink:0;
+  background: var(--paper); border:1px solid var(--border);
+  overflow:hidden;
 }
+.product-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
 .product-info{ flex:1; min-width:0; }
 .product-info strong{ display:block; font-size:0.92rem; }
 .product-info .product-meta{ font-size:0.78rem; color: var(--ink-soft); }
@@ -322,4 +346,6 @@ ul{ list-style:none; margin:0; padding:0; }
   .nav-cta{ display:none; }
   .quicklinks-inner{ grid-template-columns: 1fr; }
   .category-grid{ grid-template-columns: 1fr; }
+  .diagram-wrap{ display:none; }
+  .category-grid{ display:grid; }
 }
