@@ -1,88 +1,102 @@
-# Tienda ABC — Sistema de ventana(s) tipo escritorio
+# Adolfo Jurado — Sitio de catálogo y ventas
 
-Réplica funcional del wireframe de pizarra: diagrama radial de categorías,
-ventanas de selección de producto, mensaje de bienvenida que solo aparece
-la primera vez por subcategoría, y ventana de confirmación de venta.
+Versión profesional y responsive del sitio, con secciones reales
+(Inicio, Quiénes somos, Catálogo, Actividades, Contáctanos), catálogo
+en tarjetas, ventanas modales de una a la vez, y un panel de
+"Los más vendidos" que se actualiza solo con cada venta registrada.
 
 ## Cómo abrirlo en Visual Studio Code
 
-1. Descomprime el `.zip` y abre la carpeta `tienda-abc` en VS Code
-   (`Archivo → Abrir carpeta...`).
-2. Instala la extensión **Live Server** (autor: Ritwick Dey) desde el
-   panel de extensiones (`Ctrl+Shift+X`, busca "Live Server").
+1. Abre la carpeta del proyecto en VS Code.
+2. Instala la extensión **Live Server** (autor: Ritwick Dey).
 3. Clic derecho sobre `index.html` → **Open with Live Server**.
-   El navegador se abrirá en `http://127.0.0.1:5500/` (o similar).
 
-No requiere Node.js, npm ni ningún framework: es HTML/CSS/JS puro,
-así que también funciona si simplemente abres `index.html` con doble
-clic (algunos navegadores restringen `localStorage` en `file://`,
-por eso se recomienda Live Server).
+## Sobre el logo
 
-## Estructura de archivos
+El logo que enviaste ya está integrado en `assets/logo.png` y se usa
+tanto en el encabezado como en el pie de página.
 
-```
-tienda-abc/
-├── index.html          → estructura de la página (header, sidebar, diagrama)
-├── css/
-│   └── style.css        → estilos (paleta, ventanas, modal, diagrama)
-└── js/
-    └── app.js            → toda la lógica (catálogo, ventanas, flujo de venta)
+**Para reemplazarlo más adelante:** solo sustituye ese archivo por otra
+imagen (PNG, JPG o SVG con fondo transparente de preferencia) y
+consérvale el mismo nombre `logo.png` — así no hay que tocar el código.
+Si prefieres usar otro nombre de archivo, cámbialo también en dos
+lugares dentro de `index.html`:
+
+```html
+<img src="assets/logo.png" alt="Adolfo Jurado" class="brand-logo">
 ```
 
-## Cómo funciona el flujo (igual al de la pizarra)
+Recomendación: usa una imagen de al menos 200px de alto para que se
+vea nítida en pantallas grandes.
 
-1. El usuario hace clic en un nodo del diagrama central (ej. **Tecnología**).
-2. Se abre una ventana con las subcategorías (**PCs y laptops**, **Móviles**,
-   **Drones**).
-3. Al elegir una subcategoría:
-   - **Primera vez**: aparece un modal de bienvenida ("¡Bienvenido a PCs
-     y laptops!") con botón **Aceptar**.
-   - **Siguientes veces**: el modal ya no aparece (se recuerda con
-     `localStorage`).
-4. Se abre la ventana **"Seleccione un producto"** → botón **Aceptar**.
-5. Se abre el listado de productos con precio y botón **Comprar**
-   (ej. HP 123 — $500.00, IBM 395 — $450.00, Samsung — $350.00).
-6. Al comprar, se abre la ventana **"Venta confirmada"** con el mensaje
-   *Vendido [producto] $[precio]*, igual que en el boceto.
+## Estructura
 
-Las ventanas se pueden arrastrar desde su barra superior y cerrar con
-el botón ✕, simulando un mini sistema de ventanas de escritorio.
+```
+├── index.html          → secciones (hero, catálogo, contacto, etc.)
+├── css/style.css        → estilos de marca (rojo/negro, tipografía)
+├── js/app.js             → catálogo, ventanas, registro de ventas
+└── assets/logo.png       → logo de Adolfo Jurado
+```
 
-## Cómo agregar productos o categorías nuevas
+## Cómo funciona ahora
 
-Todo el catálogo vive en un solo objeto al inicio de `js/app.js`,
-llamado `CATALOG`. Para agregar un producto nuevo a "PCs y laptops":
+- **Inicio, Quiénes somos, Actividades, Contáctanos** ya no son
+  ventanas emergentes: son secciones reales de la página, a las que
+  el menú te lleva con scroll suave. Esto es lo estándar en un sitio
+  profesional (mejor para SEO y para compartir enlaces directos).
+- **Catálogo**: las categorías (Tecnología, Servicios, Alimentos,
+  Educación) se muestran como tarjetas, no como círculos. Al hacer
+  clic se abre una ventana con las subcategorías y luego los
+  productos, con tarjetas de producto (miniatura, nombre, detalle,
+  precio, botón Comprar).
+- **Una sola ventana a la vez**: si ya hay una ventana abierta y haces
+  clic en otra categoría o botón, la anterior se cierra automáticamente.
+  También puedes cerrar con `Esc` o haciendo clic fuera de la ventana.
+- **"Los más vendidos" es 100% dinámico**: cada vez que alguien hace
+  clic en "Comprar", esa venta queda registrada en el navegador
+  (`localStorage`, clave `aj_ventas`). El panel de "Los más vendidos"
+  lee ese registro y arma el ranking en el momento en que lo abres —
+  nunca está vacío por defecto, y si aún no hay ventas, muestra un
+  mensaje explicando que se irá llenando solo.
+- El resto de accesos rápidos (Ofertas de la semana, Liquidación,
+  Entidades públicas) están listos para reemplazar su texto por
+  contenido real editando `SIMPLE_WINDOWS` en `js/app.js`.
+
+## Importante: esto es un sitio estático (sin backend)
+
+`localStorage` guarda la información **solo en el navegador de cada
+visitante** — no es una base de datos compartida entre todos los que
+visiten el sitio. Es decir, "Los más vendidos" que ve una persona en
+su celular es distinto al que ve otra en su computadora, porque cada
+una registra sus propias compras.
+
+Si más adelante quieres que las ventas se compartan entre todos los
+visitantes (un ranking real de ventas del negocio, no por persona),
+hace falta agregar un backend con una base de datos (por ejemplo,
+Firebase, Supabase, o un servidor propio con Node.js). Puedo ayudarte
+a montar esa parte cuando quieras dar ese paso — es un cambio de
+arquitectura, no solo de diseño.
+
+## Cómo agregar productos nuevos
+
+Todo el catálogo vive en el objeto `CATALOG` al inicio de `js/app.js`.
+Para agregar un producto a una subcategoría existente:
 
 ```js
-{ id: "lenovo-x1", name: "Lenovo X1", price: 620 },
+{ id: "lenovo-x1", name: "Lenovo X1", price: 620, meta: "Core i7 · 16GB" },
 ```
 
-Para agregar una subcategoría nueva dentro de una categoría, copia el
-patrón de `pcs-laptops` (necesita `id`, `label`, `icon`, `welcomeTitle`,
-`welcomeText` y `products`).
+`meta` es el detalle corto que aparece debajo del nombre (procesador,
+capacidad, etc.) — ayuda a que las tarjetas de producto se vean
+completas y profesionales en vez de solo nombre y precio.
 
-Para agregar una categoría completamente nueva al diagrama:
+## Cómo reiniciar los datos guardados (para pruebas)
 
-1. Agrega un nodo `<g class="hub-node" data-category="mi-categoria">`
-   en `index.html`, dentro del `<svg>`.
-2. Agrega la entrada correspondiente en `CATALOG` dentro de `js/app.js`.
-
-## Cómo reiniciar el estado de "bienvenida" (para pruebas)
-
-Abre la consola del navegador (`F12`) y ejecuta:
+En la consola del navegador (`F12`):
 
 ```js
 localStorage.clear();
 ```
 
-Esto hace que todos los mensajes de bienvenida vuelvan a aparecer como
-si fuera la primera visita.
-
-## Próximos pasos sugeridos
-
-- Conectar el listado de productos a una base de datos real o a un
-  backend (por ahora los datos están fijos en `CATALOG`).
-- Agregar un carrito de compras si se necesitan múltiples productos por
-  venta, en vez de una venta directa por clic.
-- Completar el contenido real de "Quiénes somos", "Actividades" y
-  "Contáctanos" (actualmente son textos de ejemplo).
+Esto borra las ventas registradas y hace que los mensajes de
+bienvenida vuelvan a aparecer como primera visita.

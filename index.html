@@ -3,83 +3,185 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Corporación ABC S.A.C.</title>
+<title>Adolfo Jurado — Tienda</title>
+<meta name="description" content="Adolfo Jurado — Tecnología, servicios, alimentos y educación.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
   <!-- ============ HEADER ============ -->
   <header class="topbar">
-    <div class="brand">
-      <div class="brand-logo">ABC</div>
-      <div class="brand-text">
-        <strong>Corporación ABC S.A.C.</strong>
-        <span>Av. Perú 123 — Piura</span>
-      </div>
+    <div class="topbar-inner">
+      <a href="#inicio" class="brand">
+        <!--
+          LOGO: esta imagen ya está cargada desde assets/logo.png
+          (es el logo que enviaste). Para cambiarlo en el futuro,
+          solo reemplaza ese archivo por otro PNG/SVG con el mismo
+          nombre "logo.png", o cambia el "src" de aquí abajo.
+        -->
+        <img src="assets/logo.png" alt="Adolfo Jurado" class="brand-logo">
+        <span class="brand-name">ADOLFO JURADO</span>
+      </a>
+
+      <nav class="mainnav" id="mainnav">
+        <a href="#inicio">Inicio</a>
+        <a href="#quienes-somos">Quiénes somos</a>
+        <a href="#catalogo">Catálogo</a>
+        <a href="#actividades">Actividades</a>
+        <a href="#contacto">Contáctanos</a>
+      </nav>
+
+      <button class="btn btn-primary nav-cta" data-scroll="#catalogo">Ver catálogo</button>
+      <button class="navtoggle" id="navtoggle" aria-label="Abrir menú">☰</button>
     </div>
-    <nav class="mainnav">
-      <a href="#" data-window="inicio">Inicio</a>
-      <a href="#" data-window="quienes-somos">Quiénes somos</a>
-      <a href="#" data-window="actividades">Actividades</a>
-      <a href="#" data-window="contactanos">Contáctanos</a>
-    </nav>
   </header>
 
-  <div class="layout">
+  <!-- ============ HERO / INICIO ============ -->
+  <section id="inicio" class="hero">
+    <div class="hero-inner">
+      <span class="eyebrow">Tecnología · Servicios · Alimentos · Educación</span>
+      <h1>Todo lo que tu negocio necesita, en un solo lugar.</h1>
+      <p>Adolfo Jurado conecta tecnología, servicios profesionales, alimentos y
+         educación en una sola plataforma pensada para empresas y entidades
+         de Piura.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" data-scroll="#catalogo">Explorar catálogo</button>
+        <button class="btn btn-ghost" data-scroll="#contacto">Contáctanos</button>
+      </div>
+    </div>
+  </section>
 
-    <!-- ============ SIDEBAR ============ -->
-    <aside class="sidebar">
-      <button class="side-link" data-window="mas-vendidos">Los más vendidos</button>
-      <button class="side-link" data-window="ofertas-semana">Ofertas de la semana</button>
-      <button class="side-link" data-window="liquidacion">Liquidación</button>
-      <button class="side-link" data-window="entidades-publicas">Entidades públicas</button>
-    </aside>
+  <!-- ============ ACCESOS RÁPIDOS ============ -->
+  <section class="quicklinks">
+    <div class="quicklinks-inner">
+      <button class="quick-card" data-window="mas-vendidos">
+        <span class="quick-icon">🔥</span>
+        <span class="quick-label">Los más vendidos</span>
+        <span class="quick-sub">Actualizado en tiempo real</span>
+      </button>
+      <button class="quick-card" data-window="ofertas-semana">
+        <span class="quick-icon">⚡</span>
+        <span class="quick-label">Ofertas de la semana</span>
+        <span class="quick-sub">Promociones vigentes</span>
+      </button>
+      <button class="quick-card" data-window="liquidacion">
+        <span class="quick-icon">🏷️</span>
+        <span class="quick-label">Liquidación</span>
+        <span class="quick-sub">Precios especiales</span>
+      </button>
+      <button class="quick-card" data-window="entidades-publicas">
+        <span class="quick-icon">🏛️</span>
+        <span class="quick-label">Entidades públicas</span>
+        <span class="quick-sub">Convenios institucionales</span>
+      </button>
+    </div>
+  </section>
 
-    <!-- ============ HUB (diagrama radial) ============ -->
-    <main class="hub-area">
-      <svg id="hub-svg" viewBox="0 0 700 560" role="img" aria-label="Mapa de categorías de la tienda ABC">
-        <!-- las líneas se dibujan por JS para que se ajusten a los nodos -->
-        <g id="hub-lines"></g>
+  <!-- ============ QUIÉNES SOMOS ============ -->
+  <section id="quienes-somos" class="section">
+    <div class="section-inner two-col">
+      <div>
+        <span class="section-eyebrow">Quiénes somos</span>
+        <h2>Una corporación piurana con visión integral</h2>
+        <p>Adolfo Jurado nace en Piura con el objetivo de simplificar el acceso
+           a tecnología, servicios profesionales, alimentos y educación,
+           tanto para empresas privadas como para entidades públicas.
+           Trabajamos con proveedores verificados y procesos de venta
+           transparentes.</p>
+      </div>
+      <ul class="stat-list">
+        <li><strong>+4</strong><span>Líneas de negocio</span></li>
+        <li><strong>Piura</strong><span>Sede principal</span></li>
+        <li><strong>100%</strong><span>Atención personalizada</span></li>
+      </ul>
+    </div>
+  </section>
 
-        <!-- Nodo central -->
-        <g class="hub-node hub-center" data-category="inicio">
-          <circle cx="350" cy="280" r="66"></circle>
-          <text x="350" y="274" text-anchor="middle" class="hub-node-title">ABC</text>
-          <text x="350" y="296" text-anchor="middle" class="hub-node-sub">Logo</text>
-        </g>
+  <!-- ============ CATÁLOGO ============ -->
+  <section id="catalogo" class="section section-alt">
+    <div class="section-inner">
+      <span class="section-eyebrow">Catálogo</span>
+      <h2>Elige una categoría</h2>
+      <p class="section-lead">Selecciona una línea de negocio para ver subcategorías y productos disponibles.</p>
 
-        <!-- Educación -->
-        <g class="hub-node" data-category="educacion" transform="translate(350,80)">
-          <circle r="58"></circle>
-          <text text-anchor="middle" dy="6" class="hub-node-title">Educación</text>
-        </g>
+      <div class="category-grid" id="category-grid">
+        <!-- Las tarjetas de categoría se generan dinámicamente desde JS (CATALOG) -->
+      </div>
+    </div>
+  </section>
 
-        <!-- Tecnología -->
-        <g class="hub-node" data-category="tecnologia" transform="translate(110,340)">
-          <circle r="58"></circle>
-          <text text-anchor="middle" dy="6" class="hub-node-title">Tecnología</text>
-        </g>
+  <!-- ============ ACTIVIDADES ============ -->
+  <section id="actividades" class="section">
+    <div class="section-inner">
+      <span class="section-eyebrow">Actividades</span>
+      <h2>Lo último de Adolfo Jurado</h2>
+      <div class="activity-grid">
+        <article class="activity-card">
+          <span class="activity-tag">Novedad</span>
+          <h3>Ampliación de catálogo tecnológico</h3>
+          <p>Incorporamos nuevos equipos y marcas en la línea de tecnología.</p>
+        </article>
+        <article class="activity-card">
+          <span class="activity-tag">Convenio</span>
+          <h3>Alianzas con entidades públicas</h3>
+          <p>Nuevos convenios institucionales con precios preferenciales.</p>
+        </article>
+        <article class="activity-card">
+          <span class="activity-tag">Educación</span>
+          <h3>Nuevos cursos disponibles</h3>
+          <p>Programas de capacitación para equipos y colaboradores.</p>
+        </article>
+      </div>
+    </div>
+  </section>
 
-        <!-- Servicios -->
-        <g class="hub-node" data-category="servicios" transform="translate(590,340)">
-          <circle r="58"></circle>
-          <text text-anchor="middle" dy="6" class="hub-node-title">Servicios</text>
-        </g>
+  <!-- ============ CONTACTO ============ -->
+  <section id="contacto" class="section section-alt">
+    <div class="section-inner two-col">
+      <div>
+        <span class="section-eyebrow">Contáctanos</span>
+        <h2>Hablemos de tu próximo proyecto</h2>
+        <p>Escríbenos y coordinamos una cotización a tu medida.</p>
+        <ul class="contact-list">
+          <li>📍 Av. Perú 123 — Piura, Perú</li>
+          <li>✉️ danie.hs96@</li>
+          <li>📞 +51 949580786</li>
+        </ul>
+      </div>
+      <form class="contact-form" id="contact-form">
+        <label>Nombre
+          <input type="text" name="nombre" required>
+        </label>
+        <label>Correo
+          <input type="email" name="correo" required>
+        </label>
+        <label>Mensaje
+          <textarea name="mensaje" rows="4" required></textarea>
+        </label>
+        <button type="submit" class="btn btn-primary block">Enviar mensaje</button>
+        <p class="form-note" id="form-note"></p>
+      </form>
+    </div>
+  </section>
 
-        <!-- Alimentos -->
-        <g class="hub-node" data-category="alimentos" transform="translate(350,480)">
-          <circle r="58"></circle>
-          <text text-anchor="middle" dy="6" class="hub-node-title">Alimentos</text>
-        </g>
-      </svg>
-      <p class="hub-hint">Haz clic en una categoría para abrir su ventana.</p>
-    </main>
-  </div>
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="brand">
+        <img src="assets/logo.png" alt="Adolfo Jurado" class="brand-logo small">
+        <span class="brand-name">ADOLFO JURADO</span>
+      </div>
+      <p>© <span id="year"></span> Adolfo Jurado. Todos los derechos reservados.</p>
+    </div>
+  </footer>
 
-  <!-- ============ CAPA DE VENTANAS (se generan dinámicamente) ============ -->
+  <!-- ============ CAPA DE VENTANAS (una a la vez) ============ -->
   <div id="window-layer"></div>
 
-  <!-- ============ CAPA DE MODALES (bienvenida / mensajes) ============ -->
+  <!-- ============ CAPA DE MODALES (bienvenida) ============ -->
   <div id="modal-layer"></div>
 
   <script src="js/app.js"></script>

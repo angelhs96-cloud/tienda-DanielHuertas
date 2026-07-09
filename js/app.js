@@ -1,155 +1,187 @@
 /* =====================================================================
-   TIENDA ABC — lógica de la interfaz
+   ADOLFO JURADO — lógica del sitio
    ---------------------------------------------------------------------
-   Estructura del archivo:
-   1. Datos del catálogo (fácil de editar / ampliar)
-   2. Dibujo de las líneas del diagrama radial (hub)
-   3. Gestor de ventanas ("app-window") — abrir, cerrar, arrastrar
-   4. Gestor del modal de bienvenida (solo la primera vez por categoría)
-   5. Enlaces de eventos (nodos del hub, sidebar, nav)
+   1. Catálogo (categorías, subcategorías, productos)
+   2. Registro persistente de ventas (localStorage) — "Los más vendidos"
+      se calcula en tiempo real a partir de esto.
+   3. Gestor de ventanas: SOLO UNA abierta a la vez.
+   4. Modal de bienvenida (una vez por subcategoría).
+   5. Render del grid de categorías + flujo de compra.
+   6. Navegación, menú móvil, formulario de contacto.
    ===================================================================== */
 
-/* ---------- 1. DATOS DEL CATÁLOGO ---------- */
-// Para agregar una categoría nueva basta con crear una entrada aquí.
-// "welcomeKey" es el identificador que se guarda en localStorage para
-// saber si el usuario ya vio la ventana de bienvenida de esa subcategoría.
+/* ---------- 1. CATÁLOGO ---------- */
+// Para agregar un producto, súmalo al arreglo "products" de su subcategoría.
+// El campo "icon" es un emoji usado como miniatura mientras no haya foto real;
+// si luego quieres usar una foto, agrega una carpeta assets/productos/ y
+// cambia el render de .product-thumb en este archivo por una <img>.
 const CATALOG = {
   tecnologia: {
     title: "Tecnología",
+    icon: "💻",
+    subtitle: "Equipos y accesorios",
     subcategories: [
       {
         id: "pcs-laptops",
         label: "PCs y laptops",
         icon: "💻",
-        welcomeTitle: "¡Bienvenido a PCs y laptops!",
+        welcomeTitle: "Bienvenido a PCs y laptops",
         welcomeText: "Encuentra los mejores equipos al mejor precio.",
         products: [
-          { id: "hp123", name: "HP 123", price: 500 },
-          { id: "ibm395", name: "IBM 395", price: 450 },
-          { id: "samsung", name: "Samsung", price: 350 },
+          { id: "hp123", name: "HP 123", price: 500, meta: "Core i5 · 8GB RAM" },
+          { id: "ibm395", name: "IBM 395", price: 450, meta: "Core i3 · 8GB RAM" },
+          { id: "samsung", name: "Samsung", price: 350, meta: "Celeron · 4GB RAM" },
         ],
       },
       {
         id: "moviles",
         label: "Móviles",
         icon: "📱",
-        welcomeTitle: "¡Bienvenido a Móviles!",
+        welcomeTitle: "Bienvenido a Móviles",
         welcomeText: "Los últimos equipos móviles del mercado.",
         products: [
-          { id: "movil-a", name: "Modelo A", price: 700 },
-          { id: "movil-b", name: "Modelo B", price: 550 },
+          { id: "movil-a", name: "Modelo A", price: 700, meta: "128GB · 5G" },
+          { id: "movil-b", name: "Modelo B", price: 550, meta: "64GB · 4G" },
         ],
       },
       {
         id: "drones",
         label: "Drones",
         icon: "🚁",
-        welcomeTitle: "¡Bienvenido a Drones!",
+        welcomeTitle: "Bienvenido a Drones",
         welcomeText: "Equipos para uso profesional y recreativo.",
         products: [
-          { id: "dron-x", name: "Dron X", price: 900 },
+          { id: "dron-x", name: "Dron X", price: 900, meta: "Cámara 4K" },
         ],
       },
     ],
   },
   servicios: {
     title: "Servicios",
+    icon: "🛠️",
+    subtitle: "Soporte y mantenimiento",
     subcategories: [
       {
         id: "servicios-generales",
         label: "Servicios",
         icon: "🛠️",
-        welcomeTitle: "¡Bienvenido a Servicios!",
+        welcomeTitle: "Bienvenido a Servicios",
         welcomeText: "Soluciones para tu empresa o negocio.",
         products: [
-          { id: "soporte-ti", name: "Soporte TI", price: 200 },
-          { id: "mantenimiento", name: "Mantenimiento", price: 120 },
+          { id: "soporte-ti", name: "Soporte TI", price: 200, meta: "Visita técnica" },
+          { id: "mantenimiento", name: "Mantenimiento", price: 120, meta: "Preventivo" },
         ],
       },
     ],
   },
   alimentos: {
     title: "Alimentos",
+    icon: "🍎",
+    subtitle: "Productos frescos",
     subcategories: [
       {
         id: "alimentos-generales",
         label: "Alimentos",
         icon: "🍎",
-        welcomeTitle: "¡Bienvenido a Alimentos!",
+        welcomeTitle: "Bienvenido a Alimentos",
         welcomeText: "Productos frescos todos los días.",
         products: [
-          { id: "canasta", name: "Canasta básica", price: 60 },
+          { id: "canasta", name: "Canasta básica", price: 60, meta: "12 productos" },
         ],
       },
     ],
   },
   educacion: {
     title: "Educación",
+    icon: "📚",
+    subtitle: "Cursos y capacitación",
     subcategories: [
       {
         id: "educacion-general",
         label: "Educación",
         icon: "📚",
-        welcomeTitle: "¡Bienvenido a Educación!",
+        welcomeTitle: "Bienvenido a Educación",
         welcomeText: "Cursos y material educativo.",
         products: [
-          { id: "curso-office", name: "Curso Office", price: 90 },
+          { id: "curso-office", name: "Curso Office", price: 90, meta: "20 horas" },
         ],
       },
     ],
   },
 };
 
-// Ventanas simples (informativas) que no llevan flujo de venta.
 const SIMPLE_WINDOWS = {
-  inicio: { title: "Inicio", body: "<p>Bienvenido a Corporación ABC S.A.C. Selecciona una categoría en el diagrama para comenzar.</p>" },
-  "quienes-somos": { title: "Quiénes somos", body: "<p>Somos una corporación piurana dedicada a la venta de tecnología, servicios, alimentos y educación.</p>" },
-  actividades: { title: "Actividades", body: "<p>Aquí se listarán las actividades y promociones vigentes de la corporación.</p>" },
-  contactanos: { title: "Contáctanos", body: "<p>Av. Perú 123 — Piura.<br>Escríbenos y te responderemos a la brevedad.</p>" },
-  "mas-vendidos": { title: "Los más vendidos", body: "<p>Listado de los productos con mayor número de ventas del mes.</p>" },
-  "ofertas-semana": { title: "Ofertas de la semana", body: "<p>Promociones vigentes solo por esta semana.</p>" },
-  liquidacion: { title: "Liquidación", body: "<p>Productos en liquidación con descuentos especiales.</p>" },
-  "entidades-publicas": { title: "Entidades públicas", body: "<p>Convenios y precios especiales para entidades del Estado.</p>" },
+  "ofertas-semana": {
+    title: "Ofertas de la semana",
+    bodyHTML: "<p>Promociones vigentes solo por esta semana. Escríbenos para conocer los descuentos activos en tecnología y servicios.</p>",
+  },
+  liquidacion: {
+    title: "Liquidación",
+    bodyHTML: "<p>Productos en liquidación con descuentos especiales por renovación de stock.</p>",
+  },
+  "entidades-publicas": {
+    title: "Entidades públicas",
+    bodyHTML: "<p>Convenios y precios especiales para entidades del Estado. Contáctanos con tu orden de compra.</p>",
+  },
 };
 
-/* ---------- 2. DIBUJO DE LÍNEAS DEL HUB ---------- */
-function drawHubLines() {
-  const svg = document.getElementById("hub-svg");
-  const linesGroup = document.getElementById("hub-lines");
-  const center = { x: 350, y: 280 };
-  const nodes = svg.querySelectorAll(".hub-node:not(.hub-center)");
+/* ---------- 2. REGISTRO PERSISTENTE DE VENTAS ---------- */
+// Cada compra queda guardada en localStorage bajo la clave "aj_ventas",
+// como un arreglo de objetos { productId, name, price, categoryId, ts }.
+// "Los más vendidos" se recalcula cada vez que se abre esa ventana,
+// así siempre refleja la información real y actualizada.
+const SALES_KEY = "aj_ventas";
 
-  linesGroup.innerHTML = "";
-  nodes.forEach((node) => {
-    const transform = node.getAttribute("transform"); // translate(x,y)
-    const match = /translate\(([-\d.]+),([-\d.]+)\)/.exec(transform);
-    if (!match) return;
-    const x = parseFloat(match[1]);
-    const y = parseFloat(match[2]);
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", center.x);
-    line.setAttribute("y1", center.y);
-    line.setAttribute("x2", x);
-    line.setAttribute("y2", y);
-    linesGroup.appendChild(line);
-  });
+function getSales() {
+  try {
+    return JSON.parse(localStorage.getItem(SALES_KEY)) || [];
+  } catch {
+    return [];
+  }
 }
 
-/* ---------- 3. GESTOR DE VENTANAS ---------- */
-let windowCount = 0;
-const OPEN_OFFSET = 32;
+function recordSale(product, categoryId) {
+  const sales = getSales();
+  sales.push({
+    productId: product.id,
+    name: product.name,
+    price: product.price,
+    categoryId,
+    ts: Date.now(),
+  });
+  localStorage.setItem(SALES_KEY, JSON.stringify(sales));
+}
+
+function getTopSelling(limit = 5) {
+  const sales = getSales();
+  const counts = {};
+  sales.forEach((s) => {
+    if (!counts[s.productId]) {
+      counts[s.productId] = { name: s.name, price: s.price, count: 0, total: 0 };
+    }
+    counts[s.productId].count += 1;
+    counts[s.productId].total += s.price;
+  });
+  return Object.values(counts)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, limit);
+}
+
+/* ---------- 3. GESTOR DE VENTANAS (UNA A LA VEZ) ---------- */
+function closeActiveWindow() {
+  const layer = document.getElementById("window-layer");
+  layer.innerHTML = "";
+  layer.classList.remove("open");
+}
 
 function openWindow({ title, bodyHTML, onMount }) {
+  closeActiveWindow(); // <- garantiza que nunca haya dos ventanas abiertas a la vez
+
   const layer = document.getElementById("window-layer");
+  layer.classList.add("open");
 
   const win = document.createElement("div");
   win.className = "app-window";
-  windowCount += 1;
-  const baseTop = 90 + ((windowCount * OPEN_OFFSET) % 220);
-  const baseLeft = 260 + ((windowCount * OPEN_OFFSET) % 320);
-  win.style.top = baseTop + "px";
-  win.style.left = baseLeft + "px";
-
   win.innerHTML = `
     <div class="win-titlebar">
       <strong>${title}</strong>
@@ -159,66 +191,31 @@ function openWindow({ title, bodyHTML, onMount }) {
     </div>
     <div class="win-body">${bodyHTML}</div>
   `;
-
   layer.appendChild(win);
 
-  // cerrar
-  win.querySelector(".win-close").addEventListener("click", () => win.remove());
-
-  // arrastrar por la barra de título
-  makeDraggable(win, win.querySelector(".win-titlebar"));
+  win.querySelector(".win-close").addEventListener("click", closeActiveWindow);
+  layer.addEventListener("click", (e) => { if (e.target === layer) closeActiveWindow(); }, { once: true });
 
   if (typeof onMount === "function") onMount(win);
-
   return win;
 }
 
-function makeDraggable(win, handle) {
-  let dragging = false;
-  let startX, startY, startLeft, startTop;
-
-  handle.addEventListener("mousedown", (e) => {
-    dragging = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    startLeft = win.offsetLeft;
-    startTop = win.offsetTop;
-    win.style.zIndex = 100 + windowCount++;
-    e.preventDefault();
-  });
-
-  window.addEventListener("mousemove", (e) => {
-    if (!dragging) return;
-    win.style.left = startLeft + (e.clientX - startX) + "px";
-    win.style.top = startTop + (e.clientY - startY) + "px";
-  });
-
-  window.addEventListener("mouseup", () => { dragging = false; });
-}
-
-/* ---------- 4. MODAL DE BIENVENIDA (solo primera vez) ---------- */
-function hasSeenWelcome(key) {
-  return localStorage.getItem("abc_welcome_" + key) === "1";
-}
-function markWelcomeSeen(key) {
-  localStorage.setItem("abc_welcome_" + key, "1");
-}
+/* ---------- 4. MODAL DE BIENVENIDA (una vez por subcategoría) ---------- */
+function hasSeenWelcome(key) { return localStorage.getItem("aj_welcome_" + key) === "1"; }
+function markWelcomeSeen(key) { localStorage.setItem("aj_welcome_" + key, "1"); }
 
 function showWelcomeModal(subcat, onAccept) {
   const layer = document.getElementById("modal-layer");
   layer.innerHTML = `
     <div class="modal-card">
-      <div class="win-titlebar">
-        <div class="win-controls"><button type="button" class="modal-close" aria-label="Cerrar">✕</button></div>
-      </div>
+      <div class="win-titlebar"><div class="win-controls"><button type="button" class="modal-close" aria-label="Cerrar">✕</button></div></div>
       <div class="modal-body">
         <div class="icon">${subcat.icon}</div>
         <h3>${subcat.welcomeTitle}</h3>
         <p>${subcat.welcomeText}</p>
-        <button type="button" class="btn block modal-accept">Aceptar</button>
+        <button type="button" class="btn btn-primary block modal-accept">Aceptar</button>
       </div>
-    </div>
-  `;
+    </div>`;
   layer.classList.add("open");
 
   const close = () => layer.classList.remove("open");
@@ -230,15 +227,27 @@ function showWelcomeModal(subcat, onAccept) {
   });
 }
 
-/* ---------- FLUJO DE CATEGORÍA → SUBCATEGORÍA → PRODUCTOS → VENTA ---------- */
+/* ---------- 5. RENDER DE CATEGORÍAS + FLUJO DE COMPRA ---------- */
+function renderCategoryGrid() {
+  const grid = document.getElementById("category-grid");
+  grid.innerHTML = Object.entries(CATALOG)
+    .map(
+      ([key, cat]) => `
+      <button class="category-card" data-category="${key}">
+        <span class="cat-icon">${cat.icon}</span>
+        <span class="cat-title">${cat.title}</span>
+        <span class="cat-sub">${cat.subtitle}</span>
+      </button>`
+    )
+    .join("");
+
+  grid.querySelectorAll(".category-card").forEach((card) => {
+    card.addEventListener("click", () => openCategoryWindow(card.dataset.category));
+  });
+}
+
 function openCategoryWindow(categoryKey) {
   const category = CATALOG[categoryKey];
-  if (!category) {
-    // categoría sin catálogo definido (ej. futuras ampliaciones)
-    openWindow({ title: categoryKey, bodyHTML: "<p>Contenido en construcción.</p>" });
-    return;
-  }
-
   const optionsHTML = category.subcategories
     .map((s) => `<div class="option-card" data-subcat="${s.id}"><span class="icon">${s.icon}</span>${s.label}</div>`)
     .join("");
@@ -251,54 +260,48 @@ function openCategoryWindow(categoryKey) {
   win.querySelectorAll(".option-card").forEach((card) => {
     card.addEventListener("click", () => {
       const subcat = category.subcategories.find((s) => s.id === card.dataset.subcat);
-      handleSubcategoryClick(subcat);
+      handleSubcategoryClick(subcat, categoryKey);
     });
   });
 }
 
-function handleSubcategoryClick(subcat) {
+function handleSubcategoryClick(subcat, categoryKey) {
   if (!hasSeenWelcome(subcat.id)) {
-    showWelcomeModal(subcat, () => openSelectProductWindow(subcat));
+    showWelcomeModal(subcat, () => openProductListWindow(subcat, categoryKey));
   } else {
-    openSelectProductWindow(subcat);
+    openProductListWindow(subcat, categoryKey);
   }
 }
 
-function openSelectProductWindow(subcat) {
-  const win = openWindow({
-    title: "Seleccione un producto",
-    bodyHTML: `<p>Elige uno de los productos disponibles en ${subcat.label}:</p><button type="button" class="btn block accept-select">Aceptar</button>`,
-  });
-
-  win.querySelector(".accept-select").addEventListener("click", () => {
-    win.remove();
-    openProductListWindow(subcat);
-  });
-}
-
-function openProductListWindow(subcat) {
+function openProductListWindow(subcat, categoryKey) {
   const rowsHTML = subcat.products
     .map(
       (p) => `
-      <div class="product-row" data-product="${p.id}">
-        <div class="info">
-          <strong>${p.name}</strong>
-          <span>$${p.price.toFixed(2)}</span>
+      <div class="product-card">
+        <div class="product-thumb">${CATALOG[categoryKey].icon}</div>
+        <div class="product-card-row">
+          <div class="product-info">
+            <strong>${p.name}</strong>
+            <span class="product-meta">${p.meta || ""}</span>
+          </div>
+          <div style="text-align:right; display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+            <span class="product-price">$${p.price.toFixed(2)}</span>
+            <button type="button" class="btn btn-primary comprar-btn" data-product="${p.id}">Comprar</button>
+          </div>
         </div>
-        <button type="button" class="btn comprar-btn" data-product="${p.id}">Comprar</button>
       </div>`
     )
     .join("");
 
   const win = openWindow({
     title: subcat.label,
-    bodyHTML: `<div style="display:flex;flex-direction:column;gap:8px;">${rowsHTML}</div>`,
+    bodyHTML: `<div class="product-grid">${rowsHTML}</div>`,
   });
 
   win.querySelectorAll(".comprar-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const product = subcat.products.find((p) => p.id === btn.dataset.product);
-      win.remove();
+      recordSale(product, categoryKey);
       openSoldWindow(product);
     });
   });
@@ -312,48 +315,82 @@ function openSoldWindow(product) {
         <div class="check">✓</div>
         <strong>Vendido</strong>
         <span>${product.name}</span>
-        <div class="price">$${product.price.toFixed(2)}</div>
+        <span class="price">$${product.price.toFixed(2)}</span>
       </div>`,
   });
 }
 
-/* ---------- 5. ENLACE DE EVENTOS ---------- */
-function openSimpleWindow(key) {
-  const data = SIMPLE_WINDOWS[key];
-  if (!data) return;
-  openWindow({ title: data.title, bodyHTML: data.body });
+/* ---------- "Los más vendidos" — 100% dinámico ---------- */
+function openTopSellingWindow() {
+  const top = getTopSelling(5);
+  let bodyHTML;
+  if (top.length === 0) {
+    bodyHTML = `<div class="empty-state">Aún no se han registrado ventas.<br>Este listado se actualiza automáticamente conforme se realicen compras en el catálogo.</div>`;
+  } else {
+    bodyHTML = top
+      .map(
+        (p, i) => `
+        <div class="rank-row">
+          <span class="rank-num">${i + 1}</span>
+          <div class="rank-info">
+            <strong>${p.name}</strong>
+            <span>${p.count} venta${p.count > 1 ? "s" : ""} · $${p.total.toFixed(2)} en total</span>
+          </div>
+        </div>`
+      )
+      .join("");
+  }
+  openWindow({ title: "Los más vendidos", bodyHTML });
 }
 
-function initEvents() {
-  // nodos del diagrama radial
-  document.querySelectorAll(".hub-node").forEach((node) => {
-    node.addEventListener("click", () => {
-      const category = node.dataset.category;
-      if (CATALOG[category]) {
-        openCategoryWindow(category);
-      } else {
-        openSimpleWindow(category);
+/* ---------- 6. NAVEGACIÓN / MENÚ MÓVIL / CONTACTO ---------- */
+function initNav() {
+  const toggle = document.getElementById("navtoggle");
+  const nav = document.getElementById("mainnav");
+  toggle.addEventListener("click", () => nav.classList.toggle("open"));
+  nav.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => nav.classList.remove("open")));
+
+  document.querySelectorAll("[data-scroll]").forEach((el) => {
+    el.addEventListener("click", () => {
+      document.querySelector(el.dataset.scroll)?.scrollIntoView({ behavior: "smooth" });
+    });
+  });
+}
+
+function initQuickLinks() {
+  document.querySelectorAll("[data-window]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.window;
+      if (key === "mas-vendidos") {
+        openTopSellingWindow();
+      } else if (SIMPLE_WINDOWS[key]) {
+        openWindow(SIMPLE_WINDOWS[key]);
       }
     });
   });
+}
 
-  // nav superior
-  document.querySelectorAll(".mainnav a").forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      openSimpleWindow(link.dataset.window);
-    });
-  });
-
-  // sidebar
-  document.querySelectorAll(".side-link").forEach((btn) => {
-    btn.addEventListener("click", () => openSimpleWindow(btn.dataset.window));
+function initContactForm() {
+  const form = document.getElementById("contact-form");
+  const note = document.getElementById("form-note");
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    // Este formulario aún no está conectado a un backend/email real.
+    // Por ahora solo confirma visualmente el envío en el navegador.
+    note.textContent = "Mensaje registrado. Te contactaremos pronto.";
+    form.reset();
   });
 }
 
 /* ---------- INICIALIZACIÓN ---------- */
 window.addEventListener("DOMContentLoaded", () => {
-  drawHubLines();
-  initEvents();
+  document.getElementById("year").textContent = new Date().getFullYear();
+  renderCategoryGrid();
+  initNav();
+  initQuickLinks();
+  initContactForm();
 });
-window.addEventListener("resize", drawHubLines);
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeActiveWindow();
+});
